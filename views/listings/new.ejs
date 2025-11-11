@@ -1,27 +1,73 @@
-<% layout('/layouts/boilerplate') %>
+<% layout('layouts/boilerplate') %>
 
-<h1>Create Listing</h1>
+<div class="min-h-screen flex items-center justify-center bg-gray-900">
+  <div class="w-full max-w-2xl p-8 bg-gray-800 rounded-2xl shadow-xl">
+    <h1 class="text-2xl font-bold text-white mb-6">Create Listing</h1>
 
-<form action="/listings" method="POST" enctype="multipart/form-data">
-  <div>
-    <label>Title</label>
-    <input type="text" name="title" required />
+    <form action="/listings" method="POST" enctype="multipart/form-data" class="space-y-5">
+      <!-- Title -->
+      <div>
+        <label for="title" class="block text-sm text-gray-300 mb-1">Title</label>
+        <input id="title" name="title" required
+               class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+               placeholder="Enter a title" />
+      </div>
+
+      <!-- Price -->
+      <div>
+        <label for="price" class="block text-sm text-gray-300 mb-1">Price (₹)</label>
+        <input id="price" name="price" type="number" required
+               class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+               placeholder="Enter price" />
+      </div>
+
+      <!-- Location -->
+      <div>
+        <label for="location" class="block text-sm text-gray-300 mb-1">Location</label>
+        <input id="location" name="location" required
+               class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+               placeholder="City / Area" />
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label for="description" class="block text-sm text-gray-300 mb-1">Description</label>
+        <textarea id="description" name="description" rows="4"
+                  class="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  placeholder="Write a short description..."></textarea>
+      </div>
+
+      <!-- Image -->
+      <div>
+        <label class="block text-sm text-gray-300 mb-1">Image</label>
+        <input type="file" name="image" accept="image/*"
+               class="block w-full text-gray-200 file:mr-4 file:py-2 file:px-4
+                      file:rounded-lg file:border-0 file:text-sm file:bg-gray-700
+                      hover:file:bg-gray-600 transition" />
+      </div>
+
+      <!-- Submit -->
+      <div>
+        <button type="submit"
+                class="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold
+                       shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-blue-400">
+          Create Listing
+        </button>
+      </div>
+    </form>
   </div>
+</div>
 
-  <div>
-    <label>Price</label>
-    <input type="number" name="price" required />
-  </div>
-
-  <div>
-    <label>Location</label>
-    <input type="text" name="location" required />
-  </div>
-
-  <div>
-    <label>Image</label>
-    <input type="file" name="image" accept="image/*" />
-  </div>
-
-  <button type="submit">Create Listing</button>
-</form>
+<style>
+  /* small extra glows */
+  input:focus, textarea:focus {
+    box-shadow: 0 0 14px rgba(37,99,235,0.25);
+  }
+  button:focus {
+    box-shadow: 0 0 18px rgba(59,130,246,0.28);
+  }
+  /* file input small styling fallback for browsers that don't support file: pseudo */
+  input[type="file"] {
+    color: #e5e7eb;
+  }
+</style>
