@@ -1,78 +1,51 @@
-<nav class="bg-gray-900 text-white sticky top-0 z-50 shadow-md">
-  <div class="container mx-auto flex items-center justify-between px-4 py-3">
-    <!-- Brand -->
-    <a href="/" class="text-xl font-bold">Wonderlust</a>
+<nav class="bg-[#0b0f17] text-white py-3 shadow-md">
+  <div class="container mx-auto flex justify-between items-center px-6">
 
-    <!-- Centered Search Bar -->
-    <div class="flex-1 flex justify-center">
-      <form class="hidden md:flex items-center space-x-2">
-        <input
-          type="search"
-          placeholder="Search"
-          aria-label="Search"
-          class="w-32 sm:w-60 px-3 py-1 text-sm rounded-2xl border border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          type="submit"
-          class="px-3 py-1 text-sm border border-blue-500 text-blue-500 rounded-2xl hover:bg-blue-500 hover:text-white transition"
-        >
-          Search
-        </button>
-      </form>
+    <!-- 🌾 Logo / Brand -->
+    <div class="logo">
+      <a href="/" class="text-2xl font-bold tracking-wide bg-[#111827] px-4 py-2 rounded-xl hover:bg-[#1e293b] transition-all duration-300 shadow-md hover:shadow-blue-500/30">
+        Farming Rental 🌿
+      </a>
     </div>
 
-    <!-- Right side links + Mobile Toggler -->
-    <div class="flex items-center space-x-4">
-      <!-- Desktop Menu (Right aligned) -->
-      <div class="hidden lg:flex items-center space-x-6">
-        <a href="/listings/new" class="hover:text-gray-400">Create Listing</a>
-        <% if(!curUser){ %>
-          <a href="/login" class="hover:text-gray-400">Login</a>
-          <a href="/signup" class="hover:text-gray-400">Signup</a>
-        <% } %>
-        <% if(curUser){ %>
-          <a href="/logout" class="hover:text-gray-400">Logout</a>
-        <% } %>
-      </div>
+    <!-- Desktop Menu -->
+    <div class="hidden lg:flex items-center space-x-4">
+      <a href="/listings/new" 
+         class="bg-[#111827] px-4 py-2 rounded-lg hover:bg-blue-900/40 hover:shadow-[0_0_10px_#2563eb] transition-all duration-300">
+         Create Listing
+      </a>
 
-      <!-- Mobile Toggler -->
-      <button id="menu-btn" class="block lg:hidden focus:outline-none z-50">
-        <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
+      <% 
+        var user = (typeof curUser !== 'undefined' && curUser) ? curUser : ((typeof currentUser !== 'undefined' && currentUser) ? currentUser : null);
+      %>
+
+      <% if (!user) { %>
+        <a href="/login" 
+           class="bg-[#111827] px-4 py-2 rounded-lg hover:bg-blue-900/40 hover:shadow-[0_0_10px_#2563eb] transition-all duration-300">
+           Login
+        </a>
+
+        <a href="/signup" 
+           class="bg-[#111827] px-4 py-2 rounded-lg hover:bg-blue-900/40 hover:shadow-[0_0_10px_#2563eb] transition-all duration-300">
+           Signup
+        </a>
+      <% } else { %>
+        <span class="bg-[#111827] px-4 py-2 rounded-lg shadow-inner text-blue-400 font-semibold">
+          👋 Hello, <%= user.username ? user.username : 'Farmer' %>
+        </span>
+        <a href="/logout" 
+           class="bg-[#111827] px-4 py-2 rounded-lg hover:bg-blue-900/40 hover:shadow-[0_0_10px_#2563eb] transition-all duration-300">
+           Logout
+        </a>
+      <% } %>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <div class="lg:hidden">
+      <button id="mobile-menu-btn" 
+              class="bg-[#111827] px-4 py-2 rounded-lg hover:bg-blue-900/40 hover:shadow-[0_0_10px_#2563eb] transition-all duration-300">
+        Menu
       </button>
     </div>
   </div>
-
-  <!-- Mobile Fullscreen Menu -->
-  <div
-    id="menu"
-    class="hidden absolute top-0 left-0 w-full h-screen bg-gray-900 bg-opacity-95 flex flex-col items-center justify-center space-y-6 text-2xl"
-  >
-    <a href="/" class="hover:text-green-400">Home</a>
-    <a href="/listings/new" class="hover:text-green-400">Create Listing</a>
-    <% if(!curUser){ %>
-      <a href="/login" class="hover:text-green-400">Login</a>
-      <a href="/signup" class="hover:text-green-400">Signup</a>
-    <% } %>
-    <% if(curUser){ %>
-      <a href="/logout" class="hover:text-green-400">Logout</a>
-    <% } %>
-  </div>
 </nav>
-
-<script>
-  const menuBtn = document.getElementById('menu-btn');
-  const menu = document.getElementById('menu');
-  const menuIcon = document.getElementById('menu-icon');
-
-  menuBtn.addEventListener('click', () => {
-    menu.classList.toggle('hidden');
-    // Toggle hamburger ↔ X
-    if (!menu.classList.contains('hidden')) {
-      menuIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>`;
-    } else {
-      menuIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>`;
-    }
-  });
-</script>
