@@ -1,45 +1,94 @@
-<% layout("/layouts/boilerplate") %>
+<% layout('layouts/boilerplate') %>
 
-<div class="container mt-5" style="max-width: 500px;">
-  <h2 class="text-center mb-4">Login to Your Account</h2>
+<div class="min-h-screen flex items-center justify-center bg-gray-900">
+  <div class="bg-gray-800 text-white rounded-2xl shadow-lg w-full max-w-md p-8">
+    <h2 class="text-2xl font-semibold text-center mb-6">Welcome Back</h2>
 
-  <% if (error && error.length > 0) { %>
-    <div class="alert alert-danger"><%= error %></div>
-  <% } %>
+    <form action="/login" method="POST" class="space-y-5">
 
-  <% if (success && success.length > 0) { %>
-    <div class="alert alert-success"><%= success %></div>
-  <% } %>
+      <!-- Username or Email -->
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-300 mb-1">Username or Email</label>
+        <input
+          type="text"
+          name="username"
+          id="username"
+          placeholder="Enter username or email"
+          class="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          required
+        />
+      </div>
 
-  <form action="/login" method="POST">
-    <div class="mb-3">
-      <label for="username" class="form-label">Username</label>
-      <input
-        type="text"
-        class="form-control"
-        id="username"
-        name="username"
-        placeholder="Enter your username"
-        required
-      />
-    </div>
+      <!-- Password -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+        <div class="relative">
+          <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Enter your password"
+            class="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all pr-12"
+            required
+          />
+          <!-- show/hide toggle -->
+          <button type="button" id="togglePassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+      </div>
 
-    <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input
-        type="password"
-        class="form-control"
-        id="password"
-        name="password"
-        placeholder="Enter your password"
-        required
-      />
-    </div>
+      <!-- Login Button -->
+      <button
+        id="loginBtn"
+        type="submit"
+        class="w-full bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-400 text-white font-semibold py-3 rounded-lg shadow-md transition-all transform hover:scale-105 active:scale-95"
+      >
+        Login
+      </button>
 
-    <button type="submit" class="btn btn-primary w-100">Login</button>
-  </form>
+    </form>
 
-  <div class="text-center mt-3">
-    <p>Don't have an account? <a href="/signup">Sign up here</a></p>
+    <p class="text-center text-gray-400 text-sm mt-6">
+      Don't have an account?
+      <a href="/signup" class="text-blue-400 hover:text-blue-500 font-medium transition-colors">
+        Sign up here
+      </a>
+    </p>
   </div>
 </div>
+
+<!-- small JS for show/hide password + button glow on click -->
+<script>
+  // show / hide password
+  const toggle = document.getElementById('togglePassword');
+  const passwordField = document.getElementById('password');
+  toggle.addEventListener('click', () => {
+    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordField.setAttribute('type', type);
+    toggle.innerHTML = type === 'password' ? '<i class="fa-solid fa-eye"></i>' : '<i class="fa-solid fa-eye-slash"></i>';
+  });
+
+  // add glow effect when login button clicked (temporary visual)
+  const loginBtn = document.getElementById('loginBtn');
+  loginBtn.addEventListener('click', (e) => {
+    loginBtn.classList.add('active-login');
+    setTimeout(()=> loginBtn.classList.remove('active-login'), 700);
+  });
+</script>
+
+<style>
+  /* input focus glow (same as signup) */
+  input:focus {
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.35);
+  }
+
+  /* login button temporary active glow */
+  #loginBtn.active-login {
+    box-shadow: 0 0 20px rgba(59,130,246,0.55), 0 0 40px rgba(37,99,235,0.35);
+    transform: scale(1.03);
+  }
+
+  /* keep the eye button not selectable */
+  #togglePassword { background: transparent; border: none; cursor: pointer; }
+</style>
