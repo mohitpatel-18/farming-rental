@@ -8,7 +8,7 @@ export default function Header() {
   const [openSign, setOpenSign] = useState(false);
 
   return (
-    <header className="py-4 border-b">
+    <header className="py-4 border-b flex justify-center">
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <img src="/src/assets/logo.png" alt="logo" className="w-12 h-12" />

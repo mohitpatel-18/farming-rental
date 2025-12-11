@@ -2,11 +2,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Reviews from "../components/Reviews"; // ensure path is correct
+import equipment from "./components/equipment";
 
 export default function Hero() {
   const navigate = useNavigate();
 
   return (
+    <> <equipment/>  
     <section style={container}>
       <div style={card}>
         <div style={left}>
@@ -22,7 +24,7 @@ export default function Hero() {
             alt="tractor"
             src="/src/assets/tractor-hero.jpg"
             style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8 }}
-          />
+          /> 
         </div>
       </div>
 
@@ -52,9 +54,9 @@ export default function Hero() {
         {/* Reviews area (home preview) */}
         <Reviews limit={3} />
       </div>
-    </section>
+    </section></>
   );
-}
+} 
 
 /* styles (JS objects) */
 const container = { maxWidth: 1200, margin: "40px auto", padding: "0 20px" };

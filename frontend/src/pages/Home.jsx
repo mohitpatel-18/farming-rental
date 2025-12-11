@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 const FALLBACK = "/src/assets/tractor-hero.jpg";
 
-export default function Home() {
+export default function Home(equipment) {<equipment/>
   const navigate = useNavigate();
   const [tools, setTools] = useState([]);
 

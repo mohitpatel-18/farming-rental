@@ -9,7 +9,6 @@ import Home from "./pages/Home";
 import Tools from "./pages/Tools";
 import Contact from "./pages/Contact";
 import Profile from "./pages/Profile";
-
 import MyBookings from "./pages/MyBookings";
 import RentRequests from "./pages/RentRequests";
 import MyToolsPage from "./pages/MyToolsPage";
