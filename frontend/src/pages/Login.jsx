@@ -1,106 +1,33 @@
-import React, { useContext, useEffect, useState } from "react";
-import { ShopContext } from "../context/ShopContext";
-import axios from "axios";
-import { toast } from "react-toastify";
+// src/pages/Login.jsx
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useShop } from "../context/ShopContext";
 
-const Login = () => {
-  const [currentState, setCurrentState] = useState("Login");
-  const {token,setToken,navigate,backendUrl}=useContext(ShopContext);
-  const [name,setName]= useState();
-  const [password,setPassword]= useState();
-  const [email,setEmail]=useState();
-  const onSubmitHandler = async (event) => {
-    event.preventDefault();
-    try {
-      if (currentState === 'Sign Up') {
-        const response = await axios.post(
-          `${backendUrl}/api/user/register`,
-          { name, email, password },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-        if (response.data.success) {
-          setToken(response.data.token)
-          localStorage.setItem('token',response.data.token)
-        }
-        else{
-          toast.error(response.data.message)
-        }
-      } else {
-        const response = await axios.post(
-          `${backendUrl}/api/user/login`,
-          {email, password }
-        );
-        if (response.data.success) {
-          setToken(response.data.token)
-          localStorage.setItem('token',response.data.token)
-        }
-        else{
-          toast.error(response.data.message)
-        }
-      }
-    } catch (error) {
-      console.log(error)
-      toast.error(error.message)
-    }
-  };
-useEffect(()=>{
-if (token) {
-  navigate('/')
-}
-},[token])
+export default function Login(){
+  const { authenticate, loginUser } = useShop();
+  const [email, setEmail] = useState("");
+  const [pass, setPass] = useState("");
+  const [msg, setMsg] = useState("");
+  const nav = useNavigate();
+
+  function onSubmit(e){
+    e.preventDefault();
+    const res = authenticate(email.trim(), pass);
+    if (!res.ok) { setMsg(res.message); return; }
+    loginUser(res.user);
+    setMsg("");
+    nav("/");
+  }
+
   return (
-    <form onSubmit={onSubmitHandler} className="flex flex-col items-center w-[90%] sm:max-w-96 m-auto mt-14 gap-4 text-gray-800">
-      <div className="inline-flex items-center gap-2 mt-10 mb-2">
-        <p className="text-3xl prata-regular">{currentState}</p>
-        <hr className="border-none h-[1.5px] w-8 bg-gray-800" />
-      </div>
-      {currentState === "Login" ? (
-        ""
-      ) : (
-        <input onChange={(e)=>setName(e.target.value)} value={name}
-          type="text"
-          className="w-full px-3 py-2 border border-gray-800"
-          placeholder="John Doe"
-          required
-        />
-      )}
-      <input onChange={(e)=>setEmail(e.target.value)} value={email}
-        type="email"
-        className="w-full px-3 py-2 border border-gray-800"
-        placeholder="hello@gmail.com"
-        required
-      />
-      <input onChange={(e)=>setPassword(e.target.value)} value={password}
-        type="password"
-        className="w-full px-3 py-2 border border-gray-800"
-        placeholder="Password"
-        required
-      />
-      <div className="flex justify-between w-full text-sm mt-[-8px]">
-        <p className="cursor-pointer">Forgot your password?</p>
-        {currentState === "Login" ? (
-          <p
-            onClick={() => setCurrentState("Sign Up")}
-            className="cursor-pointer"
-          >
-            Create a new account
-          </p>
-        ) : (
-          <p
-            onClick={() => setCurrentState("Login")}
-            className="cursor-pointer"
-          >
-            Login here
-          </p>
-        )}
-      </div>
-      <button className="px-8 py-2 mt-4 font-light text-white bg-black">{currentState === "Login" ? "Sign In" : "Sign Up"}</button>
-    </form>
+    <main className="max-w-md mx-auto mt-16 p-6 bg-white border rounded">
+      <h1 className="text-2xl font-semibold mb-4">User Login</h1>
+      <form onSubmit={onSubmit} className="space-y-3">
+        <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" className="w-full border p-3 rounded" />
+        <input value={pass} onChange={e=>setPass(e.target.value)} placeholder="Password" type="password" className="w-full border p-3 rounded" />
+        <button className="w-full px-4 py-2 bg-farmGreen text-white rounded">Sign In</button>
+        {msg && <div className="text-sm text-red-600 mt-2">{msg}</div>}
+      </form>
+    </main>
   );
-};
-
-export default Login;
+}

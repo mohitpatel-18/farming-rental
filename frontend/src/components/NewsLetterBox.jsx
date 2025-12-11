@@ -1,27 +1,15 @@
-import React from 'react'
-
-const NewsLetterBox = () => {
-
-    const onSubmitHandler = (event) => {
-        event.preventDefault();
-        
-    }
-    
+import React from "react";
+export default function NewsLetterBox(){
   return (
-    <div className='mt-10 text-center '>
-        <p className='text-2xl font-medium text-gray-800'>Unlock 20% Off | Subscribe Today!</p>
-        <p className='mt-3 text-gray-400'>Don't miss out—unlock your savings now by subscribing below!</p>
-        <form onClick={onSubmitHandler} className='flex items-center w-full gap-3 pl-3 mx-auto my-6 border sm:w-1/2'>
-            <input 
-                className='w-full outline-none sm:flex-1' 
-                type="email" 
-                placeholder='hello@gmail.com'
-                required 
-            />
-            <button type='submit' className='px-10 py-4 text-xs text-white bg-black'>SUBSCRIBE</button>
-        </form>
+    <div className="max-w-6xl mx-auto px-6 py-6">
+      <div className="bg-white border p-6 rounded-md">
+        <h4 className="font-semibold">Get updates</h4>
+        <p className="text-gray-600 text-sm">Signup for deals & new tools</p>
+        <div className="mt-4 flex gap-2">
+          <input className="border p-2 rounded-md flex-1" placeholder="Your email" />
+          <button className="px-4 py-2 bg-farmGreen text-white rounded-md">Subscribe</button>
+        </div>
+      </div>
     </div>
-  )
+  );
 }
-
-export default NewsLetterBox

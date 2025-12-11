@@ -1,40 +1,35 @@
-import React, { useContext, useEffect, useState } from "react";
-import { ShopContext } from "../context/ShopContext";
-import Title from "./Title";
-import ProductItem from "./ProductItem";
+import React from "react";
+import { useShop } from "../context/ShopContext";
 
-const LatestCollection = () => {
-  const { products } = useContext(ShopContext);
-  const [latestProducts, setLatestProducts] = useState([]);
-
-  useEffect(() => {
-    setLatestProducts(products.slice(0, 10));
-  }, [products]);
+export default function LatestCollection() {
+  const { tools } = useShop();
 
   return (
-    <div className="my-10">
-      <div className="py-8 text-3xl text-center">
-        <Title text1={"LATEST"} text2={"COLLECTIONS"} />
-        <p className="w-3/4 m-auto text-xs text-gray-600 sm:text-sm md:text-base">
-          Step into a world of style with our newest collections, carefully
-          curated to bring you the best in fashion, home decor, and more.
-        </p>
-      </div>
+    <section className="max-w-6xl mx-auto px-6 mt-12">
+      <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>Latest Collections</h2>
 
-      {/* Rendering Product Items */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-y-6">
-        {latestProducts.map((item, index) => (
-          <ProductItem
-            key={index}
-            id={item._id}
-            image={item.image}
-            name={item.name}
-            price={item.price}
-          />
-        ))}
-      </div>
-    </div>
+      {(!tools || tools.length === 0) ? (
+        <p style={{ color: "#666" }}>No equipment listed yet.</p>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px,1fr))", gap: 16, marginTop: 12 }}>
+          {tools.map((tool) => (
+            <div key={tool.id} style={{ border: "1px solid #eee", borderRadius: 10, overflow: "hidden", background: "#fff", boxShadow: "0 8px 20px rgba(0,0,0,0.04)" }}>
+              {tool.image ? (
+                <img src={tool.image} alt={tool.title} style={{ width: "100%", height: 160, objectFit: "cover" }} />
+              ) : null}
+
+              <div style={{ padding: 12 }}>
+                <div style={{ fontWeight: 800, fontSize: 16 }}>{tool.title}</div>
+                <div style={{ color: "#666", marginTop: 6 }}>{tool.description}</div>
+                <div style={{ marginTop: 10, fontWeight: 700, color: "#1f7a3a" }}>₹{tool.pricePerHour}/hour</div>
+                <button style={{ marginTop: 10, padding: "8px 12px", background: "#1f7a3a", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer" }}>
+                  Rent Now
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
   );
-};
-
-export default LatestCollection;
+}

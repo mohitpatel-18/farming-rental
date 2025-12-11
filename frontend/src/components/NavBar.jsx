@@ -1,83 +1,182 @@
-import React, { useContext, useState } from 'react'
-import { assets } from '../assets/assets'
-import { Link, NavLink } from 'react-router-dom'
-import { ShopContext } from '../context/ShopContext';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import SignupModal from "./SignupModal";
+import LoginModal from "./LoginModal";
+import { useAuth } from "../context/AuthContext";
 
-const NavBar = () => {
-    const [visible, setVisible] = useState(false);
-    const {setShowSearch, getCartCount,navigate,token,setToken,setCartItems} = useContext(ShopContext);
-    const logout = ()=>{
-        navigate('/login')
-        localStorage.removeItem('token');
-        setToken('');
-        setCartItems({});
-        
-    }
+export default function Navbar() {
+  const [showSignup, setShowSignup] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const { user, logout } = useAuth();
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const navigate = useNavigate();
+
+  const handleNavigate = (path) => {
+    setShowProfileMenu(false);
+    navigate(path);
+  };
+
+  const handleLogout = () => {
+    logout?.();
+    setShowProfileMenu(false);
+    navigate("/");
+  };
+
   return (
-    <div className='flex items-center justify-between py-5 font-medium'>
-        <Link to='/'>
-            <img src={assets.logo} className='w-36' alt="Trendify" />
+    <nav style={styles.nav}>
+      <div style={styles.left}>
+        <Link to="/" style={styles.brand}>
+          <img src="/logo.png" alt="logo" style={{ width: 44, marginRight: 10 }} />
+
+          <div>
+            <div style={{ fontWeight: 700, color: "#1e3a2e", fontSize: 18 }}>
+              Farming Rental
+            </div>
+            <div style={{ fontSize: 12, color: "#6b6b6b" }}>
+              Rent the right farming equipment
+            </div>
+          </div>
         </Link>
-        <ul className='hidden gap-5 text-sm text-gray-700 sm:flex'>
-            <NavLink to='/' className='flex flex-col items-center gap-1'>
-                <p>HOME</p>
-                <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-            </NavLink>
-            <NavLink to='/collection' className='flex flex-col items-center gap-1'>
-                <p>COLLECTION</p>
-                <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-            </NavLink>
-            <NavLink to='/about' className='flex flex-col items-center gap-1'>
-                <p>ABOUT</p>
-                <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-            </NavLink>
-            <NavLink to='/contact' className='flex flex-col items-center gap-1'>
-                <p>CONTACT</p>
-                <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-            </NavLink>
-        </ul>
-        <div className='flex items-center gap-6'>
-            <img 
-                onClick={() => setShowSearch(true)} 
-                src={assets.search_icon} 
-                className='w-5 cursor-pointer' 
-                alt="Search Products" 
-            />
-            <div className='relative group'>
-                
-                    <img onClick={()=> token?null :navigate('/login')} src={assets.profile_icon} className='w-5 cursor-pointer' alt="Your Profile" />
-                
-{token &&  
- <div className='absolute right-0 hidden pt-4 group-hover:block dropdown-menu'>
-                    <div className='flex flex-col gap-2 px-5 py-3 text-gray-500 rounded w-36 bg-slate-100'>
-                        <p className='cursor-pointer hover:text-black'>Profile</p>
-                        <p onClick={()=>navigate('/orders')} className='cursor-pointer hover:text-black'>Orders</p>
-                        <p onClick={logout} className='cursor-pointer hover:text-black'>Logout</p>
-                    </div>
-                </div>}
-            </div>
-            <Link to='/cart' className='relative'>
-                <img src={assets.cart_icon} className='w-5 min-w-5' alt="Cart" />
-                <p className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>{getCartCount()}</p>
-            </Link>
-            <img onClick={() => setVisible(true)} src={assets.menu_icon} className='w-5 cursor-pointer sm:hidden' alt="Menu Icon" />
+
+        <div style={styles.links}>
+          <Link to="/" style={styles.link}>Home</Link>
+          <Link to="/tools" style={styles.link}>Tools</Link>
+          <Link to="/contact" style={styles.link}>Contact</Link>
         </div>
-        
-        {/* INFO: Sidbar menu for smaller screens */}
-        <div className={`absolute top-0 right-0 bottom-0 overflow-hidden bg-white transition-all ${visible ? 'w-full' : 'w-0'}`}>
-            <div className='flex flex-col text-gray-600'>
-                <div onClick={() => setVisible(false)} className='flex items-center gap-4 p-3 cursor-pointer'>
-                    <img src={assets.dropdown_icon} className='h-4 rotate-180' alt="Dropdown" />
-                    <p>Back</p>
+      </div>
+
+      <div style={styles.actions}>
+        {!user && (
+          <>
+            <button style={styles.btnOutline} onClick={() => setShowLogin(true)}>
+              Login
+            </button>
+            <button style={styles.btnPrimary} onClick={() => setShowSignup(true)}>
+              Sign up
+            </button>
+          </>
+        )}
+
+        {user && (
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setShowProfileMenu((s) => !s)}
+              style={styles.profileBtn}
+              title={user.name}
+              aria-haspopup="true"
+              aria-expanded={showProfileMenu}
+            >
+              <div style={styles.avatar}>{user.name ? user.name[0].toUpperCase() : "U"}</div>
+              <div style={{ marginLeft: 8 }}>{user.name ? user.name.split(" ")[0] : "User"}</div>
+            </button>
+
+            {showProfileMenu && (
+              <div style={styles.dropdown}>
+                <div
+                  style={styles.ddItem}
+                  onClick={() => handleNavigate("/profile/bookings")}
+                >
+                  My Bookings
                 </div>
-                <NavLink onClick={() => setVisible(false)} className='py-2 pl-6 border' to='/'>HOME</NavLink>
-                <NavLink onClick={() => setVisible(false)} className='py-2 pl-6 border' to='/collection'>COLLECTION</NavLink>
-                <NavLink onClick={() => setVisible(false)} className='py-2 pl-6 border' to='/about'>ABOUT</NavLink>
-                <NavLink onClick={() => setVisible(false)} className='py-2 pl-6 border' to='/contact'>CONTACT</NavLink>
-            </div>
-        </div>
-    </div>
-  )
+
+                <div
+                  style={styles.ddItem}
+                  onClick={() => handleNavigate("/profile/my-tools")}
+                >
+                  My Tools
+                </div>
+
+                <div
+                  style={styles.ddItem}
+                  onClick={() => handleNavigate("/profile/requests")}
+                >
+                  Rent Requests
+                </div>
+
+                <div
+                  style={{ ...styles.ddItem, borderTop: "1px solid #f0f0f0" }}
+                  onClick={handleLogout}
+                >
+                  Logout
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <SignupModal open={showSignup} onClose={() => setShowSignup(false)} />
+      <LoginModal open={showLogin} onClose={() => setShowLogin(false)} />
+    </nav>
+  );
 }
 
-export default NavBar
+const styles = {
+  nav: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "12px 28px",
+    borderBottom: "1px solid #eee",
+    background: "#fff",
+    position: "sticky",
+    top: 0,
+    zIndex: 20,
+  },
+  left: { display: "flex", alignItems: "center", gap: 18 },
+  brand: { display: "flex", alignItems: "center", textDecoration: "none" },
+  links: { display: "flex", gap: 12, marginLeft: 16 },
+  link: { textDecoration: "none", color: "#333", padding: "6px 8px" },
+  actions: { display: "flex", alignItems: "center", gap: 8 },
+  btnPrimary: {
+    background: "#1f7a3a",
+    color: "#fff",
+    border: "none",
+    padding: "8px 12px",
+    borderRadius: 6,
+  },
+  btnOutline: {
+    background: "transparent",
+    border: "1px solid #ccc",
+    padding: "8px 12px",
+    borderRadius: 6,
+  },
+  profileBtn: {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    border: "1px solid #eee",
+    padding: "6px 10px",
+    borderRadius: 10,
+    background: "#fff",
+    cursor: "pointer",
+  },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: "50%",
+    background: "#1f7a3a",
+    color: "#fff",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: 700,
+  },
+  dropdown: {
+    position: "absolute",
+    right: 0,
+    marginTop: 8,
+    background: "#fff",
+    border: "1px solid #eee",
+    boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+    borderRadius: 8,
+    overflow: "hidden",
+    minWidth: 160,
+  },
+  ddItem: {
+    padding: "10px 14px",
+    cursor: "pointer",
+    whiteSpace: "nowrap",
+    color: "#333",
+  },
+};

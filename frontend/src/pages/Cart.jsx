@@ -1,89 +1,89 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { ShopContext } from '../context/ShopContext';
-import Title from '../components/Title';
-import { assets } from '../assets/assets';
-import CartTotal from '../components/CartTotal';
+// src/pages/Cart.jsx
+import React from "react";
+import { useShop } from "../context/ShopContext";
 
-const Cart = () => {
-  const { products, currency, cartItems, updateQuantity, navigate } = useContext(ShopContext);
-  const [cartData, setCartData] = useState([]);
+export default function Cart() {
+  const { cart, updateCartHours, removeFromCart, emptyCart } = useShop();
 
-  useEffect(() => {
-if (products.length>0) {
-      const tempData = [];
-    for (const items in cartItems) {
-      for (const item in cartItems[items]) {
-        if (cartItems[items][item] > 0) {
-          tempData.push({
-            _id: items,
-            size: item,
-            quantity: cartItems[items][item],
-          });
-        }
-      }
-    }
-    setCartData(tempData);
-}
-  }, [cartItems,products]);
+  const subtotal = cart.reduce((s, it) => s + Number(it.lineTotal || 0), 0);
 
-  const isCartEmpty = cartData.length === 0;
+  if (!cart || cart.length === 0) {
+    return (
+      <main className="max-w-6xl mx-auto px-6 py-12">
+        <h1 className="text-3xl font-serif mb-6">Booking Cart</h1>
+        <div className="text-gray-600">Your cart is empty</div>
+      </main>
+    );
+  }
 
   return (
-    <div className='border-t pt-14'>
-      <div className='mb-3 text-2xl'>
-        <Title text1={'YOUR'} text2={'CART'} />
-      </div>
-      <div>
-        {cartData.map((item, index) => {
-          const productData = products.find((product) => product._id === item._id);
+    <main className="max-w-6xl mx-auto px-6 py-12">
+      <h1 className="text-3xl font-serif mb-6">Booking Cart</h1>
 
-          return (
-            <div key={index} className='grid py-4 text-gray-700 border-t border-b grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4'>
-              <div className='flex items-start gap-6'>
-                <img className='w-16 sm:w-20' src={productData.image[0]} alt="Photo" />
-                <div>
-                  <p className='text-sm font-medium sm:text-lg'>{productData.name}</p>
-                  <div className='flex items-center gap-5 mt-2'>
-                    <p>
-                      {currency}&nbsp;{productData.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                    <p className='px-2 border sm:px-3 sm:py-1 bg-slate-50'>{item.size}</p>
-                  </div>
+      <div className="bg-white rounded shadow p-6">
+        <div className="space-y-6">
+          {cart.map((item) => (
+            <div key={item.id} className="grid grid-cols-12 gap-4 items-center border-b pb-4">
+              <div className="col-span-2">
+                <img src={item.imageUrl} alt={item.title} className="w-28 h-20 object-cover rounded" />
+              </div>
+
+              <div className="col-span-6">
+                <div className="font-semibold">{item.title}</div>
+                <div className="text-sm text-gray-600">₹{item.hourlyRate} / hr</div>
+                <div className="mt-2">
+                  <label className="mr-2">Hours</label>
+                  <select
+                    value={item.hours}
+                    onChange={(e) => updateCartHours(item.id, Number(e.target.value))}
+                    className="border rounded px-2 py-1"
+                  >
+                    {Array.from({ length: 99 }, (_, i) => i + 1).map((h) => (
+                      <option key={h} value={h}>{h}</option>
+                    ))}
+                  </select>
+
+                  <button
+                    onClick={() => removeFromCart(item.id)}
+                    className="ml-4 text-red-600 hover:underline"
+                  >
+                    Remove
+                  </button>
                 </div>
               </div>
-              <input
-                onChange={(e) => e.target.value === '' || e.target.value === '0' ? null : updateQuantity(item._id, item.size, Number(e.target.value))} 
-                className='px-1 py-1 border max-w-10 sm:max-w-20 sm:px-2' 
-                type="number" 
-                min={1} 
-                defaultValue={item.quantity} 
-              />
-              <img 
-                onClick={() => updateQuantity(item._id, item.size, 0)} 
-                className='w-4 mr-4 cursor-pointer sm:w-5' 
-                src={assets.bin_icon} 
-                alt="Remove" 
-              />
+
+              <div className="col-span-4 text-right">
+                <div className="text-sm text-gray-500">Line total</div>
+                <div className="text-xl font-semibold">₹{item.lineTotal}</div>
+              </div>
             </div>
-          );
-        })}
-      </div>
-      <div className='flex justify-end my-20'>
-        <div className='w-full sm:w-[450px]'>
-          <CartTotal />
-          <div className='w-full text-end'>
-            <button 
-              onClick={() => navigate('/place-order')} 
-              className={`px-8 py-3 my-8 text-sm text-white bg-black active:bg-gray-700 ${isCartEmpty ? 'opacity-50 cursor-not-allowed' : ''}`}
-              disabled={isCartEmpty}
+          ))}
+        </div>
+
+        <div className="mt-6 flex items-center justify-between">
+          <div>
+            <div className="text-sm text-gray-500">Subtotal</div>
+            <div className="text-2xl font-bold">₹{subtotal}</div>
+          </div>
+
+          <div className="flex gap-4">
+            <button
+              className="bg-green-700 text-white px-4 py-2 rounded"
+              onClick={() => {
+                // confirm booking (demo)
+                alert("Booking confirmed (demo).");
+                emptyCart();
+              }}
             >
-              PROCEED TO CHECKOUT
+              Confirm Booking
+            </button>
+
+            <button className="border px-4 py-2 rounded" onClick={() => { /* navigate or just close */ }}>
+              Continue browsing
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
-
-export default Cart;

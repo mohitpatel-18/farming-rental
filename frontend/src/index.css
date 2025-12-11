@@ -1,29 +1,116 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap');
+/* src/index.css - Tailwind base + small custom UI tweaks */
 
+/* Tailwind directives (required) */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* {
-    font-family: Outfit;
+/* --- Customizations & small helpers --- */
+
+/* body / base */
+html,body,#root {
+  height: 100%;
+}
+body {
+  @apply bg-white text-gray-800 font-sans;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-a.active hr {
-    @apply block;
+/* serif heading style used in your UI */
+h1, h2, h3 {
+  font-family: "Georgia", "Times New Roman", serif;
 }
 
-.prata-regular {
-    font-family: "Prata", serif;
-    font-weight: 400;
-    font-style: normal;
+/* Header logo & nav spacing */
+.app-header {
+  @apply border-b border-gray-200 bg-white;
+}
+.app-header .container {
+  @apply max-w-6xl mx-auto px-6 py-4 flex items-center justify-between;
 }
 
-::-webkit-scrollbar {
-    display: none;
+/* Sign up diamond button (rotated) */
+.btn-sign-rot {
+  @apply relative w-12 h-12 flex items-center justify-center transform rotate-45 bg-green-50 hover:bg-green-100 rounded-sm shadow-sm;
+}
+.btn-sign-rot > .inner {
+  @apply transform -rotate-45 text-xs font-medium text-green-700;
 }
 
-@media (max-width:640px) {
-    a.active {
-        @apply text-white bg-black;
-    }
+/* circular avatar */
+.avatar {
+  @apply w-10 h-10 rounded-full flex items-center justify-center bg-gray-100 text-gray-700 font-medium;
+}
+
+/* Hero layout tweaks */
+.hero-section {
+  @apply max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-8 items-center;
+}
+.hero-cta {
+  @apply inline-block bg-green-700 text-white px-6 py-3 rounded;
+}
+
+/* Collection cards grid */
+.collection-grid {
+  @apply max-w-6xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8;
+}
+.card {
+  @apply bg-white shadow-sm border rounded overflow-hidden;
+}
+.card img {
+  @apply w-full h-48 object-cover;
+}
+.card-body {
+  @apply p-4;
+}
+
+/* Modal overlay & centered panel */
+.modal-overlay {
+  @apply fixed inset-0 bg-black/40 flex items-center justify-center z-40;
+}
+.modal-panel {
+  @apply bg-white rounded-lg w-96 p-6 shadow-lg;
+}
+
+/* Profile page cards */
+.profile-card, .tools-panel {
+  @apply bg-white border rounded p-6 shadow-sm;
+}
+
+/* Buttons: green primary and ghost */
+.btn {
+  @apply inline-flex items-center justify-center px-4 py-2 rounded;
+}
+.btn-primary {
+  @apply bg-green-700 text-white hover:bg-green-800;
+}
+.btn-ghost {
+  @apply border border-gray-200 bg-white text-gray-700 hover:bg-gray-50;
+}
+
+/* Small form input */
+.form-input {
+  @apply w-full border border-gray-200 rounded p-2 focus:outline-none focus:ring-2 focus:ring-green-200;
+}
+
+/* Cart / line totals */
+.line-total {
+  @apply font-semibold text-gray-800;
+}
+
+/* Small utility: selectable hours select */
+.select-hours {
+  @apply border border-gray-200 rounded p-2;
+}
+
+/* Responsive spacing for wide screens */
+@media (min-width: 1024px) {
+  .hero-cta { @apply text-base; }
+}
+
+/* tiny adjustments when images fail to load - show placeholder box */
+.img-placeholder {
+  @apply bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400;
+  min-height: 220px;
 }
