@@ -1,14 +1,12 @@
-// src/components/Hero.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import Reviews from "../components/Reviews"; // ensure path is correct
-import equipment from "./components/equipment";
+import Reviews from "../components/Reviews"; // keep path correct for your project
+import tractorHero from "../assets/tractor-hero.jpg"; // import image (safer for Vite/CRA)
 
 export default function Hero() {
   const navigate = useNavigate();
 
   return (
-    <> <equipment/>  
     <section style={container}>
       <div style={card}>
         <div style={left}>
@@ -22,20 +20,19 @@ export default function Hero() {
         <div style={imageWrap}>
           <img
             alt="tractor"
-            src="/src/assets/tractor-hero.jpg"
+            src={tractorHero}
             style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8 }}
-          /> 
+          />
         </div>
       </div>
 
-      {/* Latest equipment heading + placeholder cards */}
+      {/* Latest equipment heading + preview card */}
       <div style={latestWrap}>
         <h2 style={latestTitle}>Latest Equipment</h2>
 
-        {/* Preview single card (home preview) */}
         <div style={previewRow}>
           <div style={previewCard}>
-            <img src="/src/assets/tractor-hero.jpg" alt="tractor" style={previewImg} />
+            <img src={tractorHero} alt="tractor preview" style={previewImg} />
             <div style={{ padding: 12 }}>
               <div style={{ fontWeight: 700, fontSize: 16 }}>tractor</div>
               <div style={{ color: "#777", marginTop: 6 }}>swaraj -555</div>
@@ -51,12 +48,14 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Reviews area (home preview) */}
-        <Reviews limit={3} />
+        {/* Reviews preview (limit 3) */}
+        <div style={{ marginTop: 28 }}>
+          <Reviews limit={3} />
+        </div>
       </div>
-    </section></>
+    </section>
   );
-} 
+}
 
 /* styles (JS objects) */
 const container = { maxWidth: 1200, margin: "40px auto", padding: "0 20px" };

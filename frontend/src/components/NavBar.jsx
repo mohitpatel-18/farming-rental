@@ -42,7 +42,7 @@ export default function Navbar() {
           <Link to="/" style={styles.link}>Home</Link>
           <Link to="/tools" style={styles.link}>Tools</Link>
           <Link to="/contact" style={styles.link}>Contact</Link>
-          <Link to="/Review" style={styles.link}>Reviews</Link>
+          <Link to="/reviews" style={styles.link}>Reviews</Link>
         </div>
       </div>
 
