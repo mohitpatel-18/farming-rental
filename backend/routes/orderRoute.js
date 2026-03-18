@@ -1,17 +1,14 @@
-import express from 'express'
-import {placeOrder,placeOrderStripe,placeOrderRazorpay,allOrders,userOrders,updateStatus, verifyStripe, verifyRazorpay} from '../controllers/orderController.js'
-import adminAuth from '../middleware/adminAuth.js'
-import authUser from '../middleware/auth.js'
-const orderRouter = express.Router()
-orderRouter.post('/list',adminAuth,allOrders)
-orderRouter.post('/status',adminAuth,updateStatus)
+import express from "express";
+import { createBooking, allOrders, userOrders, updateStatus } from "../controllers/orderController.js";
+import adminAuth from "../middleware/adminAuth.js";
+import authUser from "../middleware/auth.js";
 
-orderRouter.post('/place',authUser,placeOrder)
-orderRouter.post('/stripe',authUser,placeOrderStripe)
-orderRouter.post('/razorpay',authUser,placeOrderRazorpay)
+const orderRouter = express.Router();
 
-orderRouter.post('/userorders',authUser,userOrders)
-orderRouter.post('/verifystripe',authUser,verifyStripe)
-orderRouter.post('/verifyRazorpay',authUser,verifyRazorpay)
+orderRouter.post("/list", adminAuth, allOrders);
+orderRouter.post("/status", adminAuth, updateStatus);
+orderRouter.post("/place", authUser, createBooking);
+orderRouter.post("/book", authUser, createBooking);
+orderRouter.post("/userorders", authUser, userOrders);
 
-export default orderRouter
+export default orderRouter;

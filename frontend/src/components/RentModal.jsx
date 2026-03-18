@@ -46,6 +46,7 @@ export default function RentModal({ open, onClose, onBooked, tool }) {
     const booking = {
       id: Date.now(),
       toolId: tool.id,
+      userId: customer.email || customer.phone || customer.name,
       toolTitle: title,
       ownerEmail: tool.ownerEmail,
       ownerName: tool.ownerName,
@@ -53,9 +54,8 @@ export default function RentModal({ open, onClose, onBooked, tool }) {
       customer,
       customerEmail: customer.email,
       days,
-      amount: total,
-      method: "cash",
-      status: "cash_pending",
+      totalPrice: total,
+      status: "pending",
       createdAt: new Date().toISOString(),
     };
 
@@ -79,7 +79,7 @@ export default function RentModal({ open, onClose, onBooked, tool }) {
       saveBooking();
       onBooked?.();
       setLoading(false);
-      setMessage("Booking saved. Please pay the owner in cash at pickup or delivery.");
+      setMessage("Booking saved successfully.");
       setTimeout(() => {
         setMessage("");
         onClose();
@@ -96,9 +96,9 @@ export default function RentModal({ open, onClose, onBooked, tool }) {
         <div style={styles.header}>
           <div>
             <div style={styles.title}>
-              {title} — <span style={styles.subTitle}>Rent</span>
+              {title} — <span style={styles.subTitle}>Book</span>
             </div>
-            <div style={styles.small}>Fill renter details, choose the number of days, and confirm your cash booking.</div>
+            <div style={styles.small}>Fill renter details, choose the number of days, and confirm your booking.</div>
           </div>
           <button onClick={onClose} style={styles.close}>✕</button>
         </div>
@@ -110,7 +110,7 @@ export default function RentModal({ open, onClose, onBooked, tool }) {
             <input style={styles.input} placeholder="Email (optional)" value={customer.email} onChange={(event) => setCustomer({ ...customer, email: event.target.value })} />
             <textarea style={{ ...styles.input, minHeight: 84, resize: "vertical" }} placeholder="Address" value={customer.address} onChange={(event) => setCustomer({ ...customer, address: event.target.value })} />
             <div style={{ marginTop: 8 }}>
-              <label style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>Rent duration</label>
+              <label style={{ display: "block", marginBottom: 6, fontWeight: 700 }}>Booking duration</label>
               <select style={styles.select} value={days} onChange={(event) => setDays(Number(event.target.value))}>
                 {Array.from({ length: 30 }, (_, index) => index + 1).map((value) => (
                   <option key={value} value={value}>{value} day{value > 1 ? "s" : ""}</option>
@@ -126,15 +126,14 @@ export default function RentModal({ open, onClose, onBooked, tool }) {
               <div style={{ color: "#888", marginTop: 6, fontSize: 13 }}>({days} × ₹{pricePerDay}/day)</div>
             </div>
 
-            <div style={{ marginTop: 16 }}>
-              <div style={{ marginBottom: 8, fontWeight: 700 }}>Payment method</div>
-              <div style={styles.paymentNote}>Only <strong>Pay Cash</strong> is available — pay the owner when equipment is delivered or picked up.</div>
+            <div style={{ marginTop: 16, color: "#475569", fontSize: 14, lineHeight: 1.6 }}>
+              Submit your booking request now. The owner can review and confirm it from their requests page.
             </div>
 
             {message && <div style={styles.msg}>{message}</div>}
 
             <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
-              <button onClick={handleConfirm} disabled={loading} style={styles.confirmBtn}>{loading ? "Saving..." : "Confirm booking — Pay cash"}</button>
+              <button onClick={handleConfirm} disabled={loading} style={styles.confirmBtn}>{loading ? "Saving..." : "Book Now"}</button>
               <button onClick={onClose} style={styles.cancelBtn}>Cancel</button>
             </div>
           </div>
@@ -208,7 +207,6 @@ const styles = {
     textAlign: "center",
   },
   total: { fontSize: 22, fontWeight: 900, color: "#0b6b2b", marginTop: 4 },
-  paymentNote: { color: "#666", fontSize: 13 },
   msg: { marginTop: 12, color: "#065f46", fontWeight: 700 },
   confirmBtn: {
     background: "#1f7a3a",
