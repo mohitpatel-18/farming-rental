@@ -1,5 +1,9 @@
 import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/productModel.js";
+import { isCloudinaryConfigured } from "../config/cloudinary.js";
+
+const buildLocalImageUrl = (req, image) =>
+  `${req.protocol}://${req.get("host")}/uploads/products/${image.filename}`;
 
 // INFO: Route for adding a product
 const addProduct = async (req, res) => {
@@ -23,9 +27,22 @@ const addProduct = async (req, res) => {
       (image) => image !== undefined
     );
 
-    let imageUrls = await Promise.all(
+    if (!productImages.length) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one product image is required.",
+      });
+    }
+
+    const useCloudinary = isCloudinaryConfigured();
+
+    const imageUrls = await Promise.all(
       productImages.map(async (image) => {
-        let result = await cloudinary.uploader.upload(image.path, {
+        if (!useCloudinary) {
+          return buildLocalImageUrl(req, image);
+        }
+
+        const result = await cloudinary.uploader.upload(image.path, {
           resource_type: "image",
         });
         return result.secure_url;
@@ -47,7 +64,12 @@ const addProduct = async (req, res) => {
     const product = new productModel(productData);
     await product.save();
 
-    res.status(201).json({ success: true, message: "Product added" });
+    res.status(201).json({
+      success: true,
+      message: useCloudinary
+        ? "Product added"
+        : "Product added with local image storage",
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
