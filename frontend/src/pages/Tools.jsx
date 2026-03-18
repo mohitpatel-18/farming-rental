@@ -4,7 +4,7 @@ import ToolCard from "../components/ToolCard";
 import { useShop } from "../context/ShopContext";
 
 const DEFAULT_CATEGORIES = ["All", "Tractor", "Equipment", "Harvester", "Irrigation"];
-const ACTIVE_BOOKING_STATUSES = new Set(["approved", "paid", "cash_pending", "pending", "pending_owner_approval"]);
+const ACTIVE_BOOKING_STATUSES = new Set(["approved", "pending"]);
 
 function getToolName(tool) {
   return tool?.title || tool?.name || "";
@@ -19,7 +19,7 @@ function getBookedToolIds() {
     const bookings = JSON.parse(localStorage.getItem("farming_bookings") || "[]");
     return new Set(
       bookings
-        .filter((booking) => ACTIVE_BOOKING_STATUSES.has(booking?.status || "cash_pending"))
+        .filter((booking) => ACTIVE_BOOKING_STATUSES.has(booking?.status || "pending"))
         .map((booking) => booking?.toolId)
         .filter(Boolean)
     );

@@ -1,4 +1,3 @@
-// src/pages/RentRequests.jsx
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
@@ -8,22 +7,21 @@ export default function RentRequests() {
 
   useEffect(() => {
     loadRequests();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   function loadRequests() {
     const all = JSON.parse(localStorage.getItem("farming_bookings") || "[]");
-    const mine = all.filter((b) => b.ownerEmail === user?.email);
+    const mine = all.filter((booking) => booking.ownerEmail === user?.email);
 
-    // keep existing statuses, but ensure there is some value
-    mine.forEach((b) => {
-      if (!b.status) b.status = "pending";
+    mine.forEach((booking) => {
+      if (!booking.status) {
+        booking.status = "pending";
+      }
     });
 
-    // newest first (if createdAt missing, keep order)
-    mine.sort((a, b) => {
-      if (!a.createdAt || !b.createdAt) return 0;
-      return new Date(b.createdAt) - new Date(a.createdAt);
+    mine.sort((first, second) => {
+      if (!first.createdAt || !second.createdAt) return 0;
+      return new Date(second.createdAt) - new Date(first.createdAt);
     });
 
     setRequests(mine);
@@ -32,17 +30,20 @@ export default function RentRequests() {
   function updateBooking(id, newStatus) {
     let all = JSON.parse(localStorage.getItem("farming_bookings") || "[]");
 
-    all = all.map((b) => {
-      if (b.id !== id) return b;
+    all = all.map((booking) => {
+      if (booking.id !== id) {
+        return booking;
+      }
 
-      // once approved, do not change it
-      if (b.status === "approved") return b;
+      if (booking.status === "approved") {
+        return booking;
+      }
 
       return {
-        ...b,
+        ...booking,
         status: newStatus,
-        ownerPhone: user?.phone || b.ownerPhone || "Not Provided",
-        ownerName: user?.name || b.ownerName || "",
+        ownerPhone: user?.phone || booking.ownerPhone || "Not Provided",
+        ownerName: user?.name || booking.ownerName || "",
         updatedAt: new Date().toISOString(),
       };
     });
@@ -51,16 +52,8 @@ export default function RentRequests() {
     loadRequests();
   }
 
-  // treat these statuses as "actionable" (show approve/reject)
   function isActionable(status) {
-    return (
-      status === "pending" ||
-      status === "pending_owner_approval" ||
-      status === "paid" ||
-      status === "cash_pending" ||
-      status === undefined ||
-      status === null
-    );
+    return !status || status === "pending";
   }
 
   return (
@@ -73,13 +66,13 @@ export default function RentRequests() {
       <div style={{ display: "grid", gap: 18 }}>
         {requests.length === 0 && <div style={styles.empty}>No rent requests yet.</div>}
 
-        {requests.map((r) => (
-          <div key={r.id} style={styles.card}>
+        {requests.map((request) => (
+          <div key={request.id} style={styles.card}>
             <div style={styles.cardTop}>
               <div>
-                <div style={styles.tool}>{r.toolTitle || "Tool"}</div>
+                <div style={styles.tool}>{request.toolTitle || "Tool"}</div>
                 <div style={styles.date}>
-                  Requested: {r.createdAt ? new Date(r.createdAt).toLocaleString() : "—"}
+                  Requested: {request.createdAt ? new Date(request.createdAt).toLocaleString() : "—"}
                 </div>
               </div>
 
@@ -88,42 +81,42 @@ export default function RentRequests() {
                   style={{
                     ...styles.status,
                     background:
-                      r.status === "approved"
+                      request.status === "approved"
                         ? "#d1fae5"
-                        : r.status === "rejected"
+                        : request.status === "rejected"
                         ? "#fee2e2"
                         : "#dbeafe",
                     color:
-                      r.status === "approved"
+                      request.status === "approved"
                         ? "#065f46"
-                        : r.status === "rejected"
+                        : request.status === "rejected"
                         ? "#991b1b"
                         : "#1e40af",
                   }}
                 >
-                  {(r.status || "PENDING").toString().toUpperCase()}
+                  {(request.status || "pending").toString().toUpperCase()}
                 </span>
               </div>
             </div>
 
             <div style={styles.infoBox}>
-              <div><b>Name:</b> {r.customer?.name || "—"}</div>
-              <div><b>Phone:</b> {r.customer?.phone || "—"}</div>
-              <div><b>Address:</b> {r.customer?.address || "—"}</div>
-              <div><b>Days:</b> {r.days ?? r.hours ?? "—"}</div>
+              <div><b>Name:</b> {request.customer?.name || "—"}</div>
+              <div><b>Phone:</b> {request.customer?.phone || "—"}</div>
+              <div><b>Address:</b> {request.customer?.address || "—"}</div>
+              <div><b>Days:</b> {request.days ?? "—"}</div>
               <div style={{ fontWeight: 700, marginTop: 6 }}>
-                Total: ₹{r.amount ?? 0}
+                Total: ₹{request.totalPrice ?? request.amount ?? 0}
               </div>
             </div>
 
             <div style={styles.actions}>
-              {isActionable(r.status) && r.status !== "approved" && (
+              {isActionable(request.status) && request.status !== "approved" && (
                 <>
                   <button
                     style={styles.accept}
                     onClick={() => {
                       if (!confirm("Approve this booking? This cannot be undone.")) return;
-                      updateBooking(r.id, "approved");
+                      updateBooking(request.id, "approved");
                     }}
                   >
                     Accept
@@ -133,7 +126,7 @@ export default function RentRequests() {
                     style={styles.reject}
                     onClick={() => {
                       if (!confirm("Reject this booking? This will mark it as cancelled.")) return;
-                      updateBooking(r.id, "rejected");
+                      updateBooking(request.id, "rejected");
                     }}
                   >
                     Reject
@@ -141,11 +134,11 @@ export default function RentRequests() {
                 </>
               )}
 
-              {r.status === "approved" && (
+              {request.status === "approved" && (
                 <div style={styles.alreadyApproved}>Already Approved</div>
               )}
 
-              {r.status === "rejected" && (
+              {request.status === "rejected" && (
                 <div style={styles.rejectedText}>Rejected</div>
               )}
             </div>
@@ -156,7 +149,6 @@ export default function RentRequests() {
   );
 }
 
-/* styles */
 const styles = {
   page: {
     padding: "30px 60px",

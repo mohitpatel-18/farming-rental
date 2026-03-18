@@ -56,7 +56,7 @@ export default function ToolCard({ tool, onRent, compact = false, availability =
             disabled={!isAvailable}
             className={`inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold text-white transition focus:outline-none focus:ring-2 focus:ring-green-300 ${isAvailable ? "bg-green-700 hover:bg-green-800" : "cursor-not-allowed bg-slate-300"}`}
           >
-            {isAvailable ? "Rent Tools Now" : "Unavailable"}
+            {isAvailable ? "Book Now" : "Unavailable"}
           </button>
         </div>
       </div>
