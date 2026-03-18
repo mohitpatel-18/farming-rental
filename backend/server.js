@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import "dotenv/config";
 import connectDB from "./config/mongodb.js";
 import connectCloudinary from "./config/cloudinary.js";
@@ -10,6 +12,8 @@ import orderRouter from "./routes/orderRoute.js";
 
 const app = express();
 const port = Number(process.env.PORT) || 4000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const startupState = {
   db: false,
@@ -23,6 +27,7 @@ const startServer = async () => {
 
     app.use(express.json());
     app.use(cors());
+    app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
     app.use("/api/user", userRouter);
     app.use("/api/product", productRouter);
