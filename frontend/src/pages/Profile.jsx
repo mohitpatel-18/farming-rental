@@ -20,6 +20,13 @@ const sortOptions = [
   { value: "name", label: "Name: A to Z" },
 ];
 
+
+const profileHighlights = [
+  { id: "response", label: "Fast responses", description: "Keep phone and email updated so renters can coordinate pickup quickly." },
+  { id: "visibility", label: "Stronger visibility", description: "Completed profiles and detailed listings look more trustworthy to nearby farmers." },
+  { id: "readiness", label: "Rental readiness", description: "Track portfolio value, category mix, and missing profile details from one dashboard." },
+];
+
 function Field({ label, required = false, children, hint, error }) {
   return (
     <label className="block">
@@ -56,6 +63,15 @@ function ChecklistItem({ label, complete }) {
     <div className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-sm ${complete ? "border-green-200 bg-green-50 text-green-800" : "border-slate-200 bg-white text-slate-500"}`}>
       <span>{label}</span>
       <span className="font-semibold">{complete ? "Done" : "Pending"}</span>
+    </div>
+  );
+}
+
+function DetailCard({ label, value, accent = false }) {
+  return (
+    <div className={`rounded-[1.5rem] border p-4 ${accent ? "border-green-200 bg-gradient-to-br from-green-50 to-white" : "border-slate-200 bg-white"}`}>
+      <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">{label}</div>
+      <div className="mt-2 text-base font-semibold text-slate-900">{value || "-"}</div>
     </div>
   );
 }
@@ -111,6 +127,16 @@ export default function Profile() {
     [myTools]
   );
 
+  const profileInitials = useMemo(() => {
+    const source = form.name || user?.name || user?.email || "User";
+    return source
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "U";
+  }, [form.name, user?.email, user?.name]);
+
   const strongestCategory = useMemo(() => {
     if (!myTools.length) {
       return "No tools yet";
@@ -153,6 +179,16 @@ export default function Profile() {
         }
       });
   }, [myTools, toolCategoryFilter, toolSearch, toolSort]);
+
+  const missingProfileFields = useMemo(
+    () => [
+      !form.name.trim() && "Add your full name",
+      !form.phone.trim() && "Add a phone number for pickup coordination",
+      !form.address.trim() && "Add your address for delivery planning",
+      myTools.length === 0 && "Publish your first tool listing",
+    ].filter(Boolean),
+    [form.address, form.name, form.phone, myTools.length]
+  );
 
   const addFormChecklist = useMemo(
     () => ({
@@ -330,21 +366,62 @@ export default function Profile() {
     <main className="px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
       <section className="mx-auto max-w-6xl">
         <div className="rounded-[2rem] border border-green-100 bg-white shadow-[0_24px_70px_rgba(22,101,52,0.10)]">
-          <div className="border-b border-green-100 bg-gradient-to-r from-white via-green-50 to-white px-6 py-8 sm:px-8 lg:px-10">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="border-b border-green-100 bg-gradient-to-br from-slate-950 via-green-950 to-green-800 px-6 py-8 text-white sm:px-8 lg:px-10">
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_360px] xl:items-start">
               <div>
-                <p className="inline-flex rounded-full bg-green-100 px-4 py-2 text-xs font-bold uppercase tracking-[0.28em] text-green-700">
+                <p className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.28em] text-green-50 backdrop-blur">
                   Account workspace
                 </p>
-                <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">Manage your profile and farming tools</h1>
-                <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
-                  Keep your account details updated, create stronger listings with live previews, and manage the equipment you share with local renters.
-                </p>
+                <div className="mt-5 flex flex-col gap-5 md:flex-row md:items-center">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-white/12 text-2xl font-bold text-white ring-1 ring-white/15">
+                    {profileInitials}
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Manage your profile and farming tools</h1>
+                    <p className="mt-3 max-w-2xl text-base leading-7 text-green-50/90">
+                      Keep your account details updated, create stronger listings with live previews, and manage the equipment you share with local renters.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-[1.5rem] border border-white/10 bg-white/10 px-4 py-4 backdrop-blur">
+                    <div className="text-xs font-semibold uppercase tracking-[0.22em] text-green-100">Profile completion</div>
+                    <div className="mt-2 text-3xl font-bold text-white">{profileCompletion}%</div>
+                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/15">
+                      <div className="h-full rounded-full bg-white" style={{ width: `${profileCompletion}%` }} />
+                    </div>
+                  </div>
+                  <div className="rounded-[1.5rem] border border-white/10 bg-white/10 px-4 py-4 backdrop-blur">
+                    <div className="text-xs font-semibold uppercase tracking-[0.22em] text-green-100">Tools listed</div>
+                    <div className="mt-2 text-3xl font-bold text-white">{myTools.length}</div>
+                    <p className="mt-2 text-sm leading-6 text-green-50/85">Keep your active rental inventory organized in one place.</p>
+                  </div>
+                  <div className="rounded-[1.5rem] border border-white/10 bg-white/10 px-4 py-4 backdrop-blur">
+                    <div className="text-xs font-semibold uppercase tracking-[0.22em] text-green-100">Portfolio value</div>
+                    <div className="mt-2 text-3xl font-bold text-white">₹{totalDailyValue}</div>
+                    <p className="mt-2 text-sm leading-6 text-green-50/85">Combined daily value across all your tool listings.</p>
+                  </div>
+                </div>
               </div>
 
-              <div className="rounded-[1.5rem] border border-green-100 bg-white px-5 py-4 text-sm text-slate-600 shadow-sm">
-                <div className="font-semibold text-slate-900">{myTools.length} tools listed</div>
-                <div className="mt-1">Profile completeness: {profileCompletion}% with smart controls across every section.</div>
+              <div className="rounded-[2rem] border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-green-100">Account health</p>
+                    <h2 className="mt-2 text-2xl font-semibold text-white">Ready for renters</h2>
+                  </div>
+                  <div className="rounded-full border border-white/15 px-3 py-1 text-sm font-semibold text-green-50">{missingProfileFields.length ? `${missingProfileFields.length} tasks left` : "All set"}</div>
+                </div>
+
+                <div className="mt-5 space-y-3">
+                  {profileHighlights.map((item) => (
+                    <div key={item.id} className="rounded-[1.25rem] border border-white/10 bg-black/10 px-4 py-4">
+                      <div className="text-sm font-semibold text-white">{item.label}</div>
+                      <p className="mt-1 text-sm leading-6 text-green-50/80">{item.description}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -356,7 +433,7 @@ export default function Profile() {
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
-                    className={`rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 ${active ? "bg-green-700 text-white shadow-[0_10px_25px_rgba(22,101,52,0.22)]" : "border border-green-100 bg-white text-slate-700 hover:border-green-300 hover:text-green-700"}`}
+                    className={`rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 ${active ? "bg-white text-green-900 shadow-[0_12px_30px_rgba(255,255,255,0.18)]" : "border border-white/15 bg-white/10 text-white hover:border-white/30 hover:bg-white/15"}`}
                   >
                     {tab.label}
                   </button>
@@ -374,25 +451,52 @@ export default function Profile() {
             </div>
 
             {activeTab === "profile" && (
-              <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+              <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
                 <div className="rounded-[1.75rem] border border-green-100 bg-white p-6 shadow-sm">
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex flex-col gap-5 border-b border-green-100 pb-6 lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                      <h2 className="text-2xl font-semibold text-slate-900">Profile</h2>
-                      <p className="mt-2 text-sm text-slate-600">Keep your contact details accurate for seamless rental communication.</p>
+                      <p className="text-sm font-semibold uppercase tracking-[0.24em] text-green-700">Profile hub</p>
+                      <h2 className="mt-2 text-2xl font-semibold text-slate-900">Build a trustworthy renter-facing profile</h2>
+                      <p className="mt-2 text-sm leading-6 text-slate-600">Keep your contact details accurate, complete your profile, and help renters reach you without friction.</p>
+                    </div>
+                    <div className="rounded-[1.5rem] border border-green-100 bg-green-50/70 px-5 py-4 text-sm text-slate-700">
+                      <div className="font-semibold text-slate-900">{missingProfileFields.length ? "Recommended next step" : "Profile status"}</div>
+                      <div className="mt-1">{missingProfileFields[0] || "Everything looks complete and ready for new bookings."}</div>
                     </div>
                   </div>
 
                   {!editing ? (
-                    <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                      {Object.entries(form).map(([field, value]) => (
-                        <div key={field} className="rounded-2xl border border-green-100 bg-green-50/60 p-4">
-                          <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">{field}</div>
-                          <div className="mt-2 text-base font-medium text-slate-900">{value || "-"}</div>
+                    <div className="mt-6 space-y-6">
+                      <div className="rounded-[1.75rem] border border-green-100 bg-gradient-to-r from-green-50 via-white to-green-50 p-5">
+                        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-green-700 text-xl font-bold text-white">{profileInitials}</div>
+                            <div>
+                              <div className="text-xl font-semibold text-slate-900">{form.name || "Add your name"}</div>
+                              <div className="mt-1 text-sm text-slate-600">{form.email || "Add an email address"}</div>
+                              <div className="mt-2 inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-green-700 ring-1 ring-green-100">{strongestCategory}</div>
+                            </div>
+                          </div>
+                          <div className="grid gap-3 sm:min-w-[220px]">
+                            <div className="rounded-2xl bg-white px-4 py-3 shadow-sm ring-1 ring-green-100">
+                              <div className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Account completion</div>
+                              <div className="mt-2 text-2xl font-bold text-slate-900">{profileCompletion}%</div>
+                            </div>
+                          </div>
                         </div>
-                      ))}
+                      </div>
 
-                      <div className="sm:col-span-2 mt-2 flex flex-wrap gap-3">
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <DetailCard label="Name" value={form.name} accent />
+                        <DetailCard label="Gender" value={form.gender} />
+                        <DetailCard label="Phone" value={form.phone} />
+                        <DetailCard label="Email" value={form.email} accent />
+                        <div className="sm:col-span-2">
+                          <DetailCard label="Address" value={form.address} />
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-3">
                         <button type="button" className="rounded-full bg-green-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800" onClick={() => setEditing(true)}>
                           Edit Profile
                         </button>
@@ -447,6 +551,16 @@ export default function Profile() {
                     <div className="text-sm font-semibold uppercase tracking-[0.24em] text-green-100">Quick overview</div>
                     <div className="mt-4 text-3xl font-bold">{myTools.length}</div>
                     <p className="mt-2 text-sm leading-6 text-green-50">tools are currently connected to your account and ready for management.</p>
+                    <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                      <div className="rounded-2xl bg-white/10 px-4 py-3">
+                        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-green-100">Top category</div>
+                        <div className="mt-2 text-lg font-semibold text-white">{strongestCategory}</div>
+                      </div>
+                      <div className="rounded-2xl bg-white/10 px-4 py-3">
+                        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-green-100">Daily portfolio</div>
+                        <div className="mt-2 text-lg font-semibold text-white">₹{totalDailyValue}</div>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="rounded-[1.75rem] border border-green-100 bg-white p-6 shadow-sm">
@@ -457,6 +571,23 @@ export default function Profile() {
                       <ChecklistItem label="Phone added" complete={Boolean(form.phone.trim())} />
                       <ChecklistItem label="Address added" complete={Boolean(form.address.trim())} />
                       <ChecklistItem label="At least one tool listed" complete={myTools.length > 0} />
+                    </div>
+                  </div>
+
+                  <div className="rounded-[1.75rem] border border-green-100 bg-white p-6 shadow-sm">
+                    <h3 className="text-lg font-semibold text-slate-900">What to improve next</h3>
+                    <div className="mt-4 space-y-3">
+                      {missingProfileFields.length ? (
+                        missingProfileFields.map((item) => (
+                          <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-700">
+                            {item}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm leading-6 text-green-800">
+                          Your profile is complete. Continue improving listing photos and descriptions to attract more renters.
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
